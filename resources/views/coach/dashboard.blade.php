@@ -17,6 +17,91 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
     <!-- CSS Files -->
     <link id="pagestyle" href="{{asset('assets/css/material-dashboard.css?v=3.1.0')}}" rel="stylesheet" />
+    
+    <!-- Custom Dashboard Styles -->
+    <style>
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0.5rem;
+            margin: 0 0.5rem;
+        }
+        
+        .nav-link.active .nav-link-text {
+            color: #fff !important;
+            font-weight: 600;
+        }
+        
+        .nav-link.active .material-icons {
+            opacity: 1 !important;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .btn-outline-primary:hover,
+        .btn-outline-info:hover,
+        .btn-outline-success:hover,
+        .btn-outline-warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .timeline-step {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+        }
+        
+        .avatar {
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .icon-shape {
+            border-radius: 0.75rem;
+        }
+        
+        .table-responsive {
+            border-radius: 0.5rem;
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .stats-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .stats-card .card-header {
+            background: transparent;
+            border: none;
+        }
+        
+        .stats-card .card-footer {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+    </style>
 </head>
 
 <body class="g-sidenav-show bg-gray-100 ">
@@ -40,47 +125,82 @@
         <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('actuality.index') }}">
+                    <a class="nav-link text-white {{ request()->routeIs('coach.dashboard') ? 'active' : '' }}" href="{{ route('coach.dashboard') }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">article</i> <!-- Icône pour Actuality -->
+                            <i class="material-icons opacity-10">dashboard</i>
                         </div>
-                        <span class="nav-link-text ms-1">Actuality</span>
+                        <span class="nav-link-text ms-1">Dashboard</span>
+                    </a>
+                </li>
+
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">
+                        Content Management
+                    </h6>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('startcourse') ? 'active' : '' }}" href="{{ route('startcourse') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">add_circle</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Create Course</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{route('posts.userPosts')}}">
+                    <a class="nav-link text-white {{ request()->routeIs('courses.userCourses') ? 'active' : '' }}" href="{{route('courses.userCourses')}}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">notes</i>  <!-- Updated icon for My Posts -->
-                        </div>
-                        <span class="nav-link-text ms-1">My Posts</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="{{route('courses.userCourses')}}">
-                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">class</i> <!-- Updated icon for My Courses -->
+                            <i class="material-icons opacity-10">class</i>
                         </div>
                         <span class="nav-link-text ms-1">My Courses</span>
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('createpost') ? 'active' : '' }}" href="{{ route('createpost') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">add_box</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Create Post</span>
+                    </a>
+                </li>
 
-
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('posts.userPosts') ? 'active' : '' }}" href="{{route('posts.userPosts')}}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">notes</i>
+                        </div>
+                        <span class="nav-link-text ms-1">My Posts</span>
+                    </a>
+                </li>
 
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">
-                        Account pages
+                        Community
                     </h6>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ route('profile', $user->id) }}">
+                    <a class="nav-link text-white {{ request()->routeIs('actuality.index') ? 'active' : '' }}" href="{{ route('actuality.index') }}">
+                        <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                            <i class="material-icons opacity-10">article</i>
+                        </div>
+                        <span class="nav-link-text ms-1">Actuality</span>
+                    </a>
+                </li>
+
+                <li class="nav-item mt-3">
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-white font-weight-bolder opacity-8">
+                        Account
+                    </h6>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link text-white {{ request()->routeIs('profile', $user->id) ? 'active' : '' }}" href="{{ route('profile', $user->id) }}">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
                             <i class="material-icons opacity-10">person</i>
                         </div>
-
                         <span class="nav-link-text ms-1">Profile</span>
                     </a>
                 </li>
@@ -88,7 +208,7 @@
                     <a class="nav-link text-white" href="{{ route('logout') }}"
                         onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
-                            <i class="material-icons opacity-10">logout</i> <!-- Icône de déconnexion -->
+                            <i class="material-icons opacity-10">logout</i>
                         </div>
                         <span class="nav-link-text ms-1">Logout</span>
                     </a>
@@ -162,7 +282,6 @@
             @else
             @include('coach.sections.defaultcontent')
             @endif
-
         </div>
         <footer class="footer py-4 ">
             <div class="container-fluid">
@@ -211,6 +330,59 @@
         // Hide success and error alerts after 4 seconds (4000 milliseconds)
         hideAlertsAfterDelay('#success-alert', 4000);
         hideAlertsAfterDelay('#error-alert', 4000);
+        
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add loading states to buttons
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                if (this.href && !this.href.includes('#')) {
+                    this.innerHTML = '<i class="material-icons me-2">hourglass_empty</i>Loading...';
+                    this.disabled = true;
+                }
+            });
+        });
+        
+        // Add tooltip initialization
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Animate statistics cards on load
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all cards for animation
+        document.querySelectorAll('.card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
     });
     </script>
  <!-- Github buttons -->

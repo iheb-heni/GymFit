@@ -24,7 +24,6 @@
                     </div>
                 </div>
                 <div class="col-auto my-auto">
-
                     <!-- Follow/Unfollow Buttons -->
                     @if (auth()->check() && auth()->user()->id !== $user->id)
                         @php
@@ -32,17 +31,26 @@
                                 ->user()
                                 ->followings->contains($user->id);
                         @endphp
-                        <div class="col-12 mt-4">
+                        <div class="d-flex align-items-center gap-3">
                             @if ($isFollowing)
-                                <form action="{{ route('unfollow', $user->id) }}" method="POST">
+                                <form action="{{ route('unfollow', $user->id) }}" method="POST" class="follow-form">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger">Unfollow</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm d-flex align-items-center">
+                                        <i class="material-icons me-1" style="font-size:18px;">person_remove</i>
+                                        <span>Unfollow</span>
+                                    </button>
                                 </form>
-                                <p class="text-success mt-2">Already following this user.</p>
+                                <span class="badge bg-success d-flex align-items-center">
+                                    <i class="material-icons me-1" style="font-size:16px;">check_circle</i>
+                                    Following
+                                </span>
                             @else
-                                <form action="{{ route('follow', $user->id) }}" method="POST">
+                                <form action="{{ route('follow', $user->id) }}" method="POST" class="follow-form">
                                     @csrf
-                                    <button type="submit" class="btn btn-primary">Follow</button>
+                                    <button type="submit" class="btn btn-primary btn-sm d-flex align-items-center">
+                                        <i class="material-icons me-1" style="font-size:18px;">person_add</i>
+                                        <span>Follow</span>
+                                    </button>
                                 </form>
                             @endif
                         </div>
@@ -127,59 +135,100 @@
                         </div>
                     </div>
                 </div>
-                <!-- Card to display users the logged-in user is following -->
+                <!-- Following Section -->
                 <div class="col-12 col-xl-4">
-                    <div class="card card-plain h-100">
-                        <div class="card-header pb-0 p-3">
-                            <h6 class="mb-0">Following: {{ $user->followings->count() }}</h6>
+                    <div class="card card-plain h-100 shadow-sm">
+                        <div class="card-header pb-0 p-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <i class="material-icons text-primary me-2">people</i>
+                                <h6 class="mb-0">Following</h6>
+                            </div>
+                            <span class="badge bg-primary">{{ $user->followings->count() }}</span>
                         </div>
                         <div class="card-body p-3">
-                            <ul class="list-group">
-                                @foreach ($user->followings as $followedUser)
-                                    <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
-                                        <div class="avatar me-3">
-                                            <a href="{{ $followedUser->role === 'coach' ? route('coachs.show', $followedUser->id) : route('users.show', $followedUser->id) }}">
+                            @if($user->followings->count() > 0)
+                                <div class="followers-list">
+                                    @foreach ($user->followings->take(5) as $followedUser)
+                                        <a href="{{ $followedUser->role === 'coach' ? route('coachs.show', $followedUser->id) : route('users.show', $followedUser->id) }}" class="text-decoration-none">
+                                            <div class="d-flex align-items-center mb-3 p-2 rounded hover-card">
+                                                <div class="avatar me-3 position-relative">
                                                 <img src="{{ $followedUser->profile_photo ? asset('storage/' . $followedUser->profile_photo) : asset('images/defaultimage.jpg') }}"
-                                                    alt="user" class="border-radius-lg shadow">
-                                            </a>
+                                                        alt="user" class="border-radius-lg shadow-sm" style="width: 40px; height: 40px;">
+                                                    <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 12px; height: 12px;"></span>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0 text-sm text-dark">{{ $followedUser->name }} {{ $followedUser->secondname }}</h6>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge badge-sm bg-{{ $followedUser->role === 'coach' ? 'warning' : 'info' }} me-2">{{ ucfirst($followedUser->role) }}</span>
+                                                        <small class="text-muted">{{ $followedUser->posts->count() }} posts</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                    @if($user->followings->count() > 5)
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#followingModal">
+                                                View All {{ $user->followings->count() }} Following
+                                            </button>
                                         </div>
-                                        <div class="d-flex align-items-start flex-column justify-content-center">
-                                            <a href="{{ $followedUser->role === 'coach' ? route('coachs.show', $followedUser->id) : route('users.show', $followedUser->id) }}" class="text-decoration-none">
-                                                <h6 class="mb-0 text-sm">{{ $followedUser->name }} {{ $followedUser->secondname }}</h6>
-                                            </a>
-                                            <p class="mb-0 text-xs">{{ $followedUser->role }}</p>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="material-icons text-muted mb-2" style="font-size: 3rem;">people_outline</i>
+                                    <p class="text-muted mb-0">Not following anyone yet</p>
                                         </div>
-                                    </li>
-                                @endforeach
-                            </ul>
+                            @endif
                         </div>
                     </div>
                 </div>
 
+                <!-- Followers Section -->
                 <div class="col-12 col-xl-4">
-                    <div class="card card-plain h-100">
-                        <div class="card-header pb-0 p-3">
-                            <h6 class="mb-0">Followers : {{ $user->followers->count() }}</h6>
+                    <div class="card card-plain h-100 shadow-sm">
+                        <div class="card-header pb-0 p-3 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <i class="material-icons text-success me-2">favorite</i>
+                                <h6 class="mb-0">Followers</h6>
+                            </div>
+                            <span class="badge bg-success">{{ $user->followers->count() }}</span>
                         </div>
                         <div class="card-body p-3">
-                            <ul class="list-group">
-                                @foreach ($user->followers as $follower)
-                                    <li class="list-group-item border-0 d-flex align-items-center px-0 mb-2 pt-0">
-                                        <div class="avatar me-3">
-                                            <a href="{{ $follower->role === 'coach' ? route('coachs.show', $follower->id) : route('users.show', $follower->id) }}">
+                            @if($user->followers->count() > 0)
+                                <div class="followers-list">
+                                    @foreach ($user->followers->take(5) as $follower)
+                                        <a href="{{ $follower->role === 'coach' ? route('coachs.show', $follower->id) : route('users.show', $follower->id) }}" class="text-decoration-none">
+                                            <div class="d-flex align-items-center mb-3 p-2 rounded hover-card">
+                                                <div class="avatar me-3 position-relative">
                                                 <img src="{{ $follower->profile_photo ? asset('storage/' . $follower->profile_photo) : asset('images/defaultimage.jpg') }}"
-                                                    alt="user" class="border-radius-lg shadow">
-                                            </a>
+                                                        alt="user" class="border-radius-lg shadow-sm" style="width: 40px; height: 40px;">
+                                                    <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 12px; height: 12px;"></span>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0 text-sm text-dark">{{ $follower->name }} {{ $follower->secondname }}</h6>
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="badge badge-sm bg-{{ $follower->role === 'coach' ? 'warning' : 'info' }} me-2">{{ ucfirst($follower->role) }}</span>
+                                                        <small class="text-muted">{{ $follower->posts->count() }} posts</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                    @if($user->followers->count() > 5)
+                                        <div class="text-center mt-3">
+                                            <button class="btn btn-outline-success btn-sm" data-bs-toggle="modal" data-bs-target="#followersModal">
+                                                View All {{ $user->followers->count() }} Followers
+                                            </button>
                                         </div>
-                                        <div class="d-flex align-items-start flex-column justify-content-center">
-                                            <a href="{{ $follower->role === 'coach' ? route('coachs.show', $follower->id) : route('users.show', $follower->id) }}" class="text-decoration-none">
-                                                <h6 class="mb-0 text-sm">{{ $follower->name }} {{ $follower->secondname }}</h6>
-                                            </a>
-                                            <p class="mb-0 text-xs">{{ $follower->role }}</p>
+                                    @endif
+                                </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="material-icons text-muted mb-2" style="font-size: 3rem;">favorite_border</i>
+                                    <p class="text-muted mb-0">No followers yet</p>
                                         </div>
-                                    </li>
-                                @endforeach
-                            </ul>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -201,7 +250,7 @@
                                             @if ($course->picture)
                                             <img src="{{ asset('storage/' . $course->picture) }}" alt="Course Image" class="img-fluid mb-3">
                                             @else
-                                                <img src="default-course-image.jpg" alt="Default Course Image" class="img-fluid border-radius-lg">
+                                                <img src="{{ asset('images/defaultimage.jpg') }}" alt="Default Course Image" class="img-fluid border-radius-lg">
                                             @endif
                                         </a>
                                     </div>
@@ -477,6 +526,177 @@
             </div>
         </div>
 
+        <!-- Followers Modal -->
+        <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="followersModalLabel">
+                            <i class="material-icons me-2">favorite</i>
+                            All Followers ({{ $user->followers->count() }})
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            @foreach($user->followers as $follower)
+                                <div class="col-md-6 mb-3">
+                                    <a href="{{ $follower->role === 'coach' ? route('coachs.show', $follower->id) : route('users.show', $follower->id) }}" class="text-decoration-none">
+                                        <div class="card border-0 shadow-sm hover-card">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3">
+                                                        <img src="{{ $follower->profile_photo ? asset('storage/' . $follower->profile_photo) : asset('images/defaultimage.jpg') }}"
+                                                            alt="user" class="border-radius-lg shadow-sm" style="width: 50px; height: 50px;">
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 text-dark">{{ $follower->name }} {{ $follower->secondname }}</h6>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge badge-sm bg-{{ $follower->role === 'coach' ? 'warning' : 'info' }} me-2">{{ ucfirst($follower->role) }}</span>
+                                                            <small class="text-muted">{{ $follower->posts->count() }} posts</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Following Modal -->
+        <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="followingModalLabel">
+                            <i class="material-icons me-2">people</i>
+                            All Following ({{ $user->followings->count() }})
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            @foreach($user->followings as $followedUser)
+                                <div class="col-md-6 mb-3">
+                                    <a href="{{ $followedUser->role === 'coach' ? route('coachs.show', $followedUser->id) : route('users.show', $followedUser->id) }}" class="text-decoration-none">
+                                        <div class="card border-0 shadow-sm hover-card">
+                                            <div class="card-body p-3">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3">
+                                                        <img src="{{ $followedUser->profile_photo ? asset('storage/' . $followedUser->profile_photo) : asset('images/defaultimage.jpg') }}"
+                                                            alt="user" class="border-radius-lg shadow-sm" style="width: 50px; height: 50px;">
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <h6 class="mb-1 text-dark">{{ $followedUser->name }} {{ $followedUser->secondname }}</h6>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge badge-sm bg-{{ $followedUser->role === 'coach' ? 'warning' : 'info' }} me-2">{{ ucfirst($followedUser->role) }}</span>
+                                                            <small class="text-muted">{{ $followedUser->posts->count() }} posts</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
+
+    <style>
+        .hover-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .hover-card:hover {
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .follow-form button {
+            transition: all 0.3s ease;
+        }
+        
+        .follow-form button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+        }
+        
+        .avatar img {
+            transition: all 0.3s ease;
+        }
+        
+        .avatar:hover img {
+            transform: scale(1.05);
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .modal-content {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading states to follow/unfollow buttons
+            document.querySelectorAll('.follow-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button[type="submit"]');
+                    const originalText = button.innerHTML;
+                    
+                    button.disabled = true;
+                    button.innerHTML = '<i class="material-icons me-1" style="font-size:18px;">hourglass_empty</i><span>Processing...</span>';
+                    
+                    // Re-enable button after 3 seconds if no redirect occurs
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.innerHTML = originalText;
+                    }, 3000);
+                });
+            });
+
+            // Add smooth animations to cards
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all cards for animation
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
 @endsection

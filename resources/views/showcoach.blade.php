@@ -195,7 +195,10 @@
                                 <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-1">
                                     <a href="{{ route('viewcourse', $course->id) }}">
                                         @if ($course->picture)
-                                            <img src="{{ $course->picture }}" alt="Course Image"
+                                            <img src="{{ asset('storage/' . $course->picture) }}" alt="Course Image"
+                                                class="img-fluid border-radius-lg">
+                                        @else
+                                            <img src="{{ asset('images/defaultimage.jpg') }}" alt="Default Course Image"
                                                 class="img-fluid border-radius-lg">
                                         @endif
                                     </a>

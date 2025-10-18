@@ -22,22 +22,23 @@ class CourseController extends Controller
         'picture.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
     ]);
 
-    // Traitez l'upload des images si nécessaire
+    // Handle image upload
+    $picturePath = null;
     if ($request->hasFile('picture')) {
-        $pictures = [];
-        foreach ($request->file('picture') as $file) {
-            $path = $file->store('course_pictures', 'public');
-            $pictures[] = $path;
+        $files = $request->file('picture');
+        if (count($files) > 0) {
+            // Store the first image as the main course image
+            $picturePath = $files[0]->store('course_pictures', 'public');
         }
     }
 
-    // Créez le cours
+    // Create the course
     Course::create([
         'coach_id' => $request->coach_id,
         'title' => $request->title,
         'description' => $request->description,
         'duration' => $request->duration,
-        'picture' => isset($pictures) ? json_encode($pictures) : null,
+        'picture' => $picturePath,
     ]);
 
     return redirect()->back()->with('success', 'Course created successfully!');

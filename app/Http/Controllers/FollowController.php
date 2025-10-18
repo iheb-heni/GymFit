@@ -20,12 +20,11 @@ class FollowController extends Controller
             'follower_id' => $user->id,
             'following_id' => $coach->id,
         ]);
-    }else {
-        return redirect()->back()->with('error', 'You are aleaready following this coach.');
-
+    } else {
+        return redirect()->back()->with('error', 'You are already following this user.');
     }
 
-    return redirect()->back()->with('message', 'You are now following this coach.');
+    return redirect()->back()->with('success', 'You are now following this user.');
 }
 
     public function unfollow($id)
@@ -42,6 +41,6 @@ class FollowController extends Controller
             $follow->delete();
         }
 
-        return redirect()->back()->with('message', 'You have unfollowed this coach.');
+        return redirect()->back()->with('success', 'You have unfollowed this user.');
     }
 }

@@ -23,7 +23,16 @@ class CoachController extends Controller
     public function index()
     {
         $user = $this->getAuthenticatedUser();
-        return view('coach.dashboard', ['user'=>$user]);
+        
+        // Load user with relationships for dashboard statistics
+        $user->load([
+            'createdCourses',
+            'posts.comments',
+            'followers',
+            'followings'
+        ]);
+        
+        return view('coach.dashboard', ['user' => $user]);
     }
 
 

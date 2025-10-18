@@ -82,16 +82,16 @@ class User extends Authenticatable
         return $this->hasMany(Reclamation::class);
     }
 
-    // A user can follow many users (including coaches)
+    // A user can be followed by many users (including coaches)
     public function followers()
     {
-        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
     }
 
-    // A user can be followed by many users (including coaches)
+    // A user can follow many users (including coaches)
     public function followings()
     {
-        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id');
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id');
     }
 
     // A user can enroll in many courses
